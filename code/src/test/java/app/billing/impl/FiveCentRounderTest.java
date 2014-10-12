@@ -6,8 +6,6 @@ import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
 
-import static org.testng.Assert.*;
-
 public class FiveCentRounderTest {
 
     FiveCentRounder target;
