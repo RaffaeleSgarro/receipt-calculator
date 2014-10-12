@@ -38,8 +38,8 @@ public class EndToEndTest {
 
     @Test
     public void testBasket1() throws Exception {
-        _("Pasta 1kg", GROCERY, "4.29");
-        _("Book", BOOKS, "10.12");
+        add(GROCERY, "Pasta 1kg", at("4.29"));
+        add(BOOKS, "Book", at("10.12"));
         calculate();
         totalShouldBe("12.90");
         discountShouldBe("1.54");
@@ -47,9 +47,9 @@ public class EndToEndTest {
 
     @Test
     public void testBasket2() throws Exception {
-        _("Coffee 500g", GROCERY, "3.21");
-        _("Pasta 1kg", GROCERY, "4.29");
-        _("Cake", OTHER, "2.35");
+        add(GROCERY, "Coffee 500g", at("3.21"));
+        add(GROCERY, "Pasta 1kg", at("4.29"));
+        add(OTHER, "Cake", at("2.35"));
         calculate();
         totalShouldBe("9.30");
         discountShouldBe("0.56");
@@ -57,10 +57,10 @@ public class EndToEndTest {
 
     @Test
     public void testBasket3() throws Exception {
-        _("Chocolate", OTHER, "2.10", "10");
-        _("Wine", OTHER, "10.5");
-        _("Book", BOOKS, "15.05");
-        _("Apple", OTHER, "0.5", "5");
+        add(OTHER, "Chocolate", at("2.10"), quantity("10"));
+        add(OTHER, "Wine", at("10.5"));
+        add(BOOKS, "Book", at("15.05"));
+        add(OTHER, "Apple", at("0.5"), quantity("5"));
         calculate();
         totalShouldBe("44.90");
         discountShouldBe("4.17");
@@ -68,6 +68,14 @@ public class EndToEndTest {
 
     private void calculate() {
         receipt = target.calculate(basket);
+    }
+
+    private BigDecimal quantity(String str) {
+        return new BigDecimal(str);
+    }
+
+    private BigDecimal at(String str){
+        return new BigDecimal(str);
     }
 
     private void totalShouldBe(String expected) {
@@ -80,12 +88,12 @@ public class EndToEndTest {
         assertEquals(receipt.getTotalDiscount().setScale(2, BigDecimal.ROUND_HALF_UP), expectedBigDecimal);
     }
 
-    private void _(String description, Category category, String unitPrice) {
-        basket.add(new Item(new Product(category, description, new BigDecimal(unitPrice)), BigDecimal.ONE));
+    private void add(Category category, String description, BigDecimal unitPrice) {
+        basket.add(new Item(new Product(category, description, unitPrice), BigDecimal.ONE));
     }
 
-    private void _(String description, Category category, String unitPrice, String quantity) {
-        basket.add(new Item(new Product(category, description, new BigDecimal(unitPrice)), new BigDecimal(quantity)));
+    private void add(Category category, String description, BigDecimal unitPrice, BigDecimal quantity) {
+        basket.add(new Item(new Product(category, description, unitPrice), quantity));
     }
 
 }
