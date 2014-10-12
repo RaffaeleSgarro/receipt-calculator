@@ -37,6 +37,7 @@ public class Calculator {
         receipt.setGrossTotal(grossTotal);
 
         Discount volumeDiscount = volumeDiscounter.discount(receipt);
+        totalDiscount = totalDiscount.add(volumeDiscount.getAmount());
         receipt.setTotalDiscount(totalDiscount);
 
         BigDecimal netTotal = rounder.round(grossTotal.subtract(volumeDiscount.getAmount()));

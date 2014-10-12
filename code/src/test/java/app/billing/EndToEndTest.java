@@ -30,7 +30,7 @@ public class EndToEndTest {
     @BeforeMethod
     public void setUp() throws Exception {
         itemDiscounter = new CategoryItemDiscounter();
-        volumeDiscounter = new GrossTotalDiscounter();
+        volumeDiscounter = new GrossTotalDiscounter("40", "0.05");
         rounder = new FiveCentRounder();
         target = new Calculator(itemDiscounter, volumeDiscounter, rounder);
         basket = new Basket();
@@ -42,7 +42,7 @@ public class EndToEndTest {
         _("Book", BOOKS, "10.12");
         calculate();
         totalShouldBe("12.90");
-        discountShouldBe("1.53");
+        discountShouldBe("1.54");
     }
 
     @Test
@@ -62,8 +62,8 @@ public class EndToEndTest {
         _("Book", BOOKS, "15.05");
         _("Apple", OTHER, "0.5", "5");
         calculate();
-        totalShouldBe("47.25");
-        discountShouldBe("1.80");
+        totalShouldBe("44.90");
+        discountShouldBe("4.17");
     }
 
     private void calculate() {
@@ -77,7 +77,7 @@ public class EndToEndTest {
     private void discountShouldBe(String expected) {
         BigDecimal expectedBigDecimal = new BigDecimal(expected);
         if (expectedBigDecimal.scale() != 2) throw new IllegalArgumentException("Assertions needs 2 digits precision. Given " + expected);
-        assertEquals(receipt.getTotalDiscount().setScale(2, BigDecimal.ROUND_DOWN), expectedBigDecimal);
+        assertEquals(receipt.getTotalDiscount().setScale(2, BigDecimal.ROUND_HALF_UP), expectedBigDecimal);
     }
 
     private void _(String description, Category category, String unitPrice) {
