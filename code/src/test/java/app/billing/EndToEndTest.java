@@ -38,8 +38,8 @@ public class EndToEndTest {
 
     @Test
     public void testBasket1() throws Exception {
-        add(GROCERY, "Pasta 1kg", at("4.29"));
-        add(BOOKS, "Book", at("10.12"));
+        add(GROCERY, "Pasta 1kg", $("4.29"));
+        add(BOOKS, "Book", $("10.12"));
         calculate();
         totalShouldBe("12.90");
         discountShouldBe("1.54");
@@ -47,9 +47,9 @@ public class EndToEndTest {
 
     @Test
     public void testBasket2() throws Exception {
-        add(GROCERY, "Coffee 500g", at("3.21"));
-        add(GROCERY, "Pasta 1kg", at("4.29"));
-        add(OTHER, "Cake", at("2.35"));
+        add(GROCERY, "Coffee 500g", $("3.21"));
+        add(GROCERY, "Pasta 1kg", $("4.29"));
+        add(OTHER, "Cake", $("2.35"));
         calculate();
         totalShouldBe("9.30");
         discountShouldBe("0.56");
@@ -57,10 +57,10 @@ public class EndToEndTest {
 
     @Test
     public void testBasket3() throws Exception {
-        add(OTHER, "Chocolate", at("2.10"), quantity("10"));
-        add(OTHER, "Wine", at("10.5"));
-        add(BOOKS, "Book", at("15.05"));
-        add(OTHER, "Apple", at("0.5"), quantity("5"));
+        add(OTHER, "Chocolate", $("2.10"), x("10"));
+        add(OTHER, "Wine", $("10.5"));
+        add(BOOKS, "Book", $("15.05"));
+        add(OTHER, "Apple", $("0.5"), x("5"));
         calculate();
         totalShouldBe("44.90");
         discountShouldBe("4.17");
@@ -70,12 +70,38 @@ public class EndToEndTest {
         receipt = target.calculate(basket);
     }
 
-    private BigDecimal quantity(String str) {
-        return new BigDecimal(str);
+    private static class Quantity {
+
+        private final BigDecimal val;
+
+        private Quantity(String val) {
+            this.val = new BigDecimal(val);
+        }
+
+        public BigDecimal val() {
+            return val;
+        }
     }
 
-    private BigDecimal at(String str){
-        return new BigDecimal(str);
+    private static class Price {
+
+        private final BigDecimal val;
+
+        private Price(String val) {
+            this.val = new BigDecimal(val);
+        }
+
+        public BigDecimal val() {
+            return val;
+        }
+    }
+
+    private Quantity x(String str) {
+        return new Quantity(str);
+    }
+
+    private Price $(String str){
+        return new Price(str);
     }
 
     private void totalShouldBe(String expected) {
@@ -88,12 +114,12 @@ public class EndToEndTest {
         assertEquals(receipt.getTotalDiscount().setScale(2, BigDecimal.ROUND_HALF_UP), expectedBigDecimal);
     }
 
-    private void add(Category category, String description, BigDecimal unitPrice) {
-        basket.add(new Item(new Product(category, description, unitPrice), BigDecimal.ONE));
+    private void add(Category category, String description, Price unitPrice) {
+        basket.add(new Item(new Product(category, description, unitPrice.val()), new Quantity("1").val()));
     }
 
-    private void add(Category category, String description, BigDecimal unitPrice, BigDecimal quantity) {
-        basket.add(new Item(new Product(category, description, unitPrice), quantity));
+    private void add(Category category, String description, Price unitPrice, Quantity quantity) {
+        basket.add(new Item(new Product(category, description, unitPrice.val()), quantity.val()));
     }
 
 }
