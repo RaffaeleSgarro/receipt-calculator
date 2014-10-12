@@ -4,18 +4,14 @@ import app.domain.Basket;
 import app.domain.Category;
 import app.domain.Item;
 import app.domain.Product;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
 
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.*;
-import static org.testng.Assert.*;
 
 public class CalculatorTest {
 
@@ -37,7 +33,6 @@ public class CalculatorTest {
         when(volumeDiscounter.discount(any(Receipt.class))).thenReturn(discount);
 
         rounder = mock(Rounder.class);
-        when(rounder.round(any(BigDecimal.class))).thenReturn(BigDecimal.ZERO);
 
         target = new Calculator(itemDiscounter, volumeDiscounter, rounder);
         basket = new Basket();
